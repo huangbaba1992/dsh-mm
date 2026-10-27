@@ -1,0 +1,10 @@
+# 本 bundle 的补丁层：插入一行 Host 插件。
+# config 是完整替换语义：profile 的 patch 层要改字段时，整行 config 重写一遍。
+- insert:
+    - id: local-memory
+      name: dsh-local-memory
+      config:
+        dir: "~/.dsh/memory"
+        soulFile: soul.md
+        memoryFile: MEMORY.md
+        maxMemoryBytes: 4096
