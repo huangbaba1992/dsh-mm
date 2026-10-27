@@ -368,8 +368,8 @@ export function createAdmin(ctx, config) {
     }
 
     const [soul, memory, catalog, pendingCount] = await Promise.all([
-      readCore(soulPath, DOC_CAP),
-      readCore(memoryPath, config.maxMemoryBytes),
+      readCore(soulPath, MAX_EDIT_BYTES),
+      readCore(memoryPath, MAX_EDIT_BYTES),
       model.catalog(),
       jobs.pendingInbox(current)
     ])

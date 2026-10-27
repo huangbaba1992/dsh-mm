@@ -507,6 +507,8 @@ window.__ModuleLoader__.load({
       const saveCore = (which) =>
         run(`save-${which}`, async () => {
           const path = which === 'soul' ? state.soulFile : state.memoryFile
+          const info = which === 'soul' ? state.soul : state.memory
+          if (info?.truncated) throw new Error(t('truncated'))
           const text = which === 'soul' ? soulText ?? '' : memText ?? ''
           await post('/file', { path, content: text })
           await load()
@@ -544,7 +546,7 @@ window.__ModuleLoader__.load({
 
       const saveTopic = () =>
         run('save-topic', async () => {
-          if (editor === null) return
+          if (editor === null || editor.truncated) return
           await post('/file', { path: editor.path, content: editor.text })
           setEditor({ ...editor, original: editor.text })
           await load()
@@ -850,7 +852,7 @@ window.__ModuleLoader__.load({
                       'div',
                       { className: 'lm-row' },
                       dirty ? h('span', { className: 'lm-pill lm-pill-warn' }, t('unsaved')) : null,
-                      h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: () => saveCore(which), disabled: busy !== '' || !dirty }, busy === `save-${which}` ? t('saving') : t('save'))
+                      h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: () => saveCore(which), disabled: busy !== '' || !dirty || info?.truncated === true }, busy === `save-${which}` ? t('saving') : t('save'))
                     )
                   ),
                   h('textarea', {
@@ -950,7 +952,7 @@ window.__ModuleLoader__.load({
                         'div',
                         { className: 'lm-row' },
                         editorDirty ? h('span', { className: 'lm-pill lm-pill-warn' }, t('unsaved')) : null,
-                        h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: saveTopic, disabled: busy !== '' || !editorDirty }, busy === 'save-topic' ? t('saving') : t('save')),
+                        h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: saveTopic, disabled: busy !== '' || !editorDirty || editor.truncated === true }, busy === 'save-topic' ? t('saving') : t('save')),
                         h('button', { type: 'button', className: 'lm-btn', onClick: () => setEditor(null), disabled: busy !== '' }, t('close'))
                       )
                     ),
