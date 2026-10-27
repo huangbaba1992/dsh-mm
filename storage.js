@@ -50,7 +50,7 @@ async function uniqueDir(root, name) {
  * @param {{soulPath: string, memoryPath: string}} paths
  * @returns {Promise<{id: string, at: number, files: number, bytes: number}>}
  */
-export async function createBackup(root, paths) {
+export async function createBackup(root, paths, keep = BACKUP_KEEP) {
   const id = stamp()
   const dir = await uniqueDir(root, id)
   const files = [paths.soulPath, paths.memoryPath, ...(await collectDocs(join(root, TOPIC_DIR), 500))]
@@ -68,7 +68,7 @@ export async function createBackup(root, paths) {
   }
   await mkdir(dir, { recursive: true })
   await writeFile(join(dir, 'meta.json'), JSON.stringify({ at: Date.now(), files: count, bytes }, null, 2), 'utf8').catch(() => {})
-  await pruneBackups(root)
+  await pruneBackups(root, keep)
   return { id: relativeOf(join(root, BACKUP_DIR), dir), at: Date.now(), files: count, bytes }
 }
 
@@ -94,7 +94,18 @@ export async function listBackups(root) {
     for (const file of files) bytes += (await stat(file).catch(() => ({ size: 0 }))).size
     out.push({ id: entry.name, at: (await stat(dir).catch(() => ({ mtimeMs: 0 }))).mtimeMs, files: files.length, bytes })
   }
-  return out.sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
+  // 新的在前：按目录 mtime，避免同一秒内 -10 与 -9 的字符串排序错位
+  return out.sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
+}
+
+/** 删除一份备份。 */
+export async function deleteBackup(root, id) {
+  if (!/^[0-9][0-9A-Za-z-]*$/.test(String(id))) throw new Error('invalid backup id')
+  const dir = join(root, BACKUP_DIR, String(id))
+  const st = await stat(dir).catch(() => undefined)
+  if (st === undefined || !st.isDirectory()) throw new Error(`backup not found: ${id}`)
+  await rm(dir, { recursive: true, force: true })
+  return { ok: true, id: String(id) }
 }
 
 /** 只保留最近 keep 份备份。 */

@@ -34,6 +34,7 @@ import { createJobs } from './jobs.js'
 import { createModel } from './model.js'
 import {
   createBackup,
+  deleteBackup,
   emptyTrash,
   ensureLayout,
   listBackups,
@@ -157,7 +158,7 @@ export function createAdmin(ctx, config) {
     await ensureLayout(root)
     await migrateLegacyDirs(root)
     await pruneTrash(root, settings.trash.keepDays).catch(() => {})
-    await pruneBackups(root).catch(() => {})
+    await pruneBackups(root, settings.backup.keep).catch(() => {})
   })()
 
   const save = async () => {
@@ -588,7 +589,8 @@ export function createAdmin(ctx, config) {
         if (req.method !== 'POST') return sendJson(res, 405, { error: 'method not allowed' })
         const body = await readJson(req)
         const action = str(body.action, 'create')
-        if (action === 'create') return sendJson(res, 200, { ok: true, backup: await createBackup(paths().root, paths()) })
+        if (action === 'create') return sendJson(res, 200, { ok: true, backup: await createBackup(paths().root, paths(), settings.backup.keep) })
+        if (action === 'delete') return sendJson(res, 200, { ok: true, ...(await deleteBackup(paths().root, str(body.id))) })
         if (action === 'restore') return sendJson(res, 200, { ok: true, ...(await restoreBackup(paths().root, str(body.id))) })
         return sendJson(res, 400, { error: `unknown action: ${action}` })
       } catch (error) {
@@ -601,13 +603,15 @@ export function createAdmin(ctx, config) {
       if (req.method !== 'POST') return sendJson(res, 405, { error: 'method not allowed' })
       try {
         const body = await readJson(req)
+        const priorKeep = settings.backup.keep
         const next = sanitizeSettings({
           ...settings,
           ...body,
           compact: { ...settings.compact, ...(body.compact ?? {}) },
           distill: { ...settings.distill, ...(body.distill ?? {}) },
           capture: { ...settings.capture, ...(body.capture ?? {}) },
-          trash: { ...settings.trash, ...(body.trash ?? {}) }
+          trash: { ...settings.trash, ...(body.trash ?? {}) },
+          backup: { ...settings.backup, ...(body.backup ?? {}) }
         })
         settings = next
         const nextRoot = rootOf(settings.dir || config.dir)
@@ -616,6 +620,7 @@ export function createAdmin(ctx, config) {
           await ensureLayout(root)
           await migrateLegacyDirs(root)
         }
+        if (settings.backup.keep !== priorKeep) await pruneBackups(root, settings.backup.keep).catch(() => {})
         await save()
         return sendJson(res, 200, { ok: true, settings, root })
       } catch (error) {

@@ -358,7 +358,7 @@ export function createJobs({ config, getSettings, paths, model }) {
     let backup = null
     const ensureBackup = async () => {
       if (backup !== null || settings.compact.backupBeforeRun === false) return
-      backup = await createBackup(root, paths())
+      backup = await createBackup(root, paths(), settings.backup?.keep ?? 10)
       result.backup = backup
     }
 
@@ -462,7 +462,7 @@ export function createJobs({ config, getSettings, paths, model }) {
     // 3) 清理过期归档/回收站/备份，汇总体积。
     if (typeof settings.trash?.keepDays === 'number') await pruneTrash(root, settings.trash.keepDays)
     await pruneArchive(join(root, INBOX_DIR))
-    await pruneBackups(root)
+    await pruneBackups(root, settings.backup?.keep ?? 10)
     for (const entry of files) {
       const st = await stat(entry.file).catch(() => undefined)
       if (st !== undefined) result.bytesAfter += st.size

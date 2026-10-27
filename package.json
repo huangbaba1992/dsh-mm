@@ -1,6 +1,6 @@
 {
   "name": "dsh-local-memory",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "Purely local soul, cross-session memory, distillation, scheduled merge/dedupe, backups and trash in a folder you choose",
   "type": "module",

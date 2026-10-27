@@ -20,7 +20,7 @@ DeepSeek Harness 的纯本地长期记忆插件：一个普通文件夹，四层
 ### 整理
 
 - 定时合并去重：完全相同文件进回收站、大文件交给模型压缩
-- 压缩前自动备份（可关），备份保留最近 10 份
+- 压缩前自动备份（可关），备份保留份数可配置（默认 10）
 - 提炼失败不归档原文，下次重试
 - 归档同名加时间戳，绝不覆盖
 
@@ -29,18 +29,21 @@ DeepSeek Harness 的纯本地长期记忆插件：一个普通文件夹，四层
 - 概览：主题数、待提炼积压、预算进度、上次运行、下次整理、warning
 - 核心文件：直接编辑 `soul.md` / `MEMORY.md`，实时字节预算，⌘S 保存
 - 主题：搜索、按类型过滤、新建、编辑、移入回收站
-- 自动化：对话记录、提炼、压缩、模型、备份等全部参数
+- 自动化：对话记录、提炼、压缩、模型等全部参数
+- 备份：创建、恢复、删除、保留份数
 - 回收站：恢复（绝不覆盖同名）、彻底删除、清空
 
 ## 界面
 
-设置页五个页签：概览、核心文件（soul / MEMORY 编辑器）、主题（搜索/新建/编辑/回收）、自动化、回收站。
+设置页六个页签：概览、核心文件（soul / MEMORY 编辑器）、主题（搜索/新建/编辑/回收）、自动化、备份、回收站。
 
 ![概览](docs/overview.png)
 
 ![主题](docs/topics.png)
 
 ![自动化](docs/automation.png)
+
+![备份](docs/backup.png)
 
 ## 文件夹结构
 
@@ -117,7 +120,7 @@ updated: 2026-10-27
 | POST | `/api/local-memory/topic` | 新建主题 |
 | POST | `/api/local-memory/delete` | 主题移入回收站 |
 | GET/POST | `/api/local-memory/trash` | 列出 / restore / purge / empty |
-| GET/POST | `/api/local-memory/backup` | 列出 / create / restore |
+| GET/POST | `/api/local-memory/backup` | 列出 / create / restore / delete |
 | POST | `/api/local-memory/settings` | 合并保存设置 |
 | POST | `/api/local-memory/distill` | 立即提炼 |
 | GET/POST | `/api/local-memory/compact` | 立即整理 / 查询状态 |

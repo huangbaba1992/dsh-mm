@@ -384,7 +384,21 @@ const { server, port } = await listen(routes)
 
   const restoredBackup = await callApi(port, '/backup', { method: 'POST', body: { action: 'restore', id: backup.backup.id } })
   assert.ok(restoredBackup.files > 0)
-  ok('backup create/restore and trash restore work')
+
+  const extra = await callApi(port, '/backup', { method: 'POST', body: { action: 'create' } })
+  await callApi(port, '/backup', { method: 'POST', body: { action: 'delete', id: extra.backup.id } })
+  const afterBackupDelete = await callApi(port, '/state')
+  assert.equal(afterBackupDelete.backups.some((item) => item.id === extra.backup.id), false)
+
+  await callApi(port, '/settings', { method: 'POST', body: { backup: { keep: 1 } } })
+  const keptFirst = await callApi(port, '/backup', { method: 'POST', body: { action: 'create' } })
+  const keptSecond = await callApi(port, '/backup', { method: 'POST', body: { action: 'create' } })
+  assert.notEqual(keptFirst.backup.id, keptSecond.backup.id)
+  const afterKeep = await callApi(port, '/state')
+  assert.equal(afterKeep.settings.backup.keep, 1)
+  assert.equal(afterKeep.backups.length, 1)
+  assert.equal(afterKeep.backups[0].id, keptSecond.backup.id)
+  ok('backup create/restore/delete/keep and trash restore work')
 }
 
 // 压缩：去重进回收站 + 备份 + 模型改写

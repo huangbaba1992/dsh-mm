@@ -102,6 +102,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   },
   trash: {
     keepDays: 30
+  },
+  backup: {
+    keep: 10
   }
 })
 
@@ -125,6 +128,7 @@ export function sanitizeSettings(raw) {
   const distill = input.distill ?? {}
   const capture = input.capture ?? {}
   const trash = input.trash ?? {}
+  const backup = input.backup ?? {}
   const legacyDistill = compact.lastDistill ?? null
   const legacyIdle = capture.idleMinutes
   return {
@@ -156,6 +160,9 @@ export function sanitizeSettings(raw) {
     },
     trash: {
       keepDays: clamp(trash.keepDays, 1, 365, DEFAULT_SETTINGS.trash.keepDays)
+    },
+    backup: {
+      keep: clamp(backup.keep, 1, 50, DEFAULT_SETTINGS.backup.keep)
     }
   }
 }

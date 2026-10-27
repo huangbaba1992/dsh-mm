@@ -31,6 +31,7 @@ window.__ModuleLoader__.load({
         tabCore: '核心文件',
         tabTopics: '主题',
         tabAutomation: '自动化',
+        tabBackup: '备份',
         tabTrash: '回收站',
         never: '还没有记录',
         notScheduled: '未启用',
@@ -148,6 +149,12 @@ window.__ModuleLoader__.load({
         backupEmpty: '还没有备份。',
         backupRestore: '恢复此备份',
         backupRestoreConfirm: '用备份 {id} 覆盖当前 soul / MEMORY / topics？覆盖后无法撤销。',
+        backupDelete: '删除备份',
+        confirmDeleteBackup: '确认删除',
+        backupDeleteConfirm: '永久删除备份 {id}？此操作不可恢复。',
+        backupDeleted: '备份已删除',
+        backupKeep: '保留份数',
+        backupHint: '恢复会覆盖当前 soul / MEMORY / topics；删除备份不可恢复。',
         backupDone: '备份完成',
         backupRestoreDone: '备份已恢复',
         backupFiles: '{n} 个文件',
@@ -183,6 +190,7 @@ window.__ModuleLoader__.load({
         tabCore: 'Core files',
         tabTopics: 'Topics',
         tabAutomation: 'Automation',
+        tabBackup: 'Backups',
         tabTrash: 'Trash',
         never: 'Never',
         notScheduled: 'Disabled',
@@ -300,6 +308,12 @@ window.__ModuleLoader__.load({
         backupEmpty: 'No backups yet.',
         backupRestore: 'Restore this backup',
         backupRestoreConfirm: 'Overwrite current soul / MEMORY / topics with backup {id}? This cannot be undone.',
+        backupDelete: 'Delete backup',
+        confirmDeleteBackup: 'Delete now',
+        backupDeleteConfirm: 'Delete backup {id} permanently? This cannot be undone.',
+        backupDeleted: 'Backup deleted',
+        backupKeep: 'Keep count',
+        backupHint: 'Restoring overwrites current soul / MEMORY / topics; deleting a backup is permanent.',
         backupDone: 'Backup created',
         backupRestoreDone: 'Backup restored',
         backupFiles: '{n} files',
@@ -491,6 +505,11 @@ window.__ModuleLoader__.load({
       const saveSettings = async (patch) => {
         try {
           await post('/settings', patch)
+          if (Object.prototype.hasOwnProperty.call(patch, 'dir')) {
+            setSoulText(null)
+            setMemText(null)
+            setEditor(null)
+          }
           await load()
           notify(t('settingsSaved'))
         } catch (err) {
@@ -604,8 +623,18 @@ window.__ModuleLoader__.load({
           await post('/backup', { action: 'restore', id: item.id })
           setConfirm(null)
           setEditor(null)
+          setSoulText(null)
+          setMemText(null)
           await load()
           notify(t('backupRestoreDone'))
+        })
+
+      const deleteBackupItem = (item) =>
+        run('delete-backup', async () => {
+          await post('/backup', { action: 'delete', id: item.id })
+          setConfirm(null)
+          await load()
+          notify(t('backupDeleted'))
         })
 
       const viewInbox = (file) =>
@@ -655,6 +684,7 @@ window.__ModuleLoader__.load({
       const compact = settings.compact ?? {}
       const distill = settings.distill ?? {}
       const capture = settings.capture ?? {}
+      const backupSettings = settings.backup ?? {}
       const trashDays = settings.trash?.keepDays ?? 30
       const groups = state.catalog?.groups ?? []
       const modelValue = compact.provider && compact.model ? `${compact.provider}::${compact.model}` : ''
@@ -667,6 +697,7 @@ window.__ModuleLoader__.load({
         ['core', t('tabCore')],
         ['topics', t('tabTopics')],
         ['automation', t('tabAutomation')],
+        ['backup', t('tabBackup') + (state.backups?.length ? ` ${state.backups.length}` : '')],
         ['trash', t('tabTrash') + (state.trash?.length ? ` ${state.trash.length}` : '')]
       ]
 
@@ -1073,36 +1104,53 @@ window.__ModuleLoader__.load({
                 h(
                   'div',
                   { className: 'lm-row' },
-                  h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: compactNow, disabled: busy !== '' || state.running }, state.running && busy === '' ? t('running') : t('compactNow')),
-                  h('button', { type: 'button', className: 'lm-btn', onClick: backupNow, disabled: busy !== '' }, t('backupNow'))
+                  h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: compactNow, disabled: busy !== '' || state.running }, state.running && busy === '' ? t('running') : t('compactNow'))
                 )
-              ),
+              )
+            )
+          : null,
 
+        tab === 'backup'
+          ? h(
+              'div',
+              { className: 'lm-stack' },
+              h('div', { className: 'lm-card-title' }, t('backupTitle')),
+              h('div', { className: 'lm-hint' }, t('backupDesc')),
+              h('div', { className: 'lm-hint' }, t('backupHint')),
               h(
                 'div',
-                { className: 'lm-card' },
-                h('div', { className: 'lm-card-title' }, t('backupTitle')),
-                h('div', { className: 'lm-hint' }, t('backupDesc')),
-                h('div', { className: 'lm-hint' }, t('backupCount', { n: state.backups?.length ?? 0 })),
-                (state.backups ?? []).length === 0
-                  ? h('div', { className: 'lm-empty' }, t('backupEmpty'))
-                  : h(
-                      'div',
-                      { className: 'lm-file-list' },
-                      state.backups.slice(0, 5).map((item) =>
-                        h(
-                          'div',
-                          { className: 'lm-file-row', key: item.id },
-                          h('span', { className: 'lm-file-name' }, item.id),
-                          h('span', { className: 'lm-muted' }, `${t('backupFiles', { n: item.files })} · ${formatBytes(item.bytes)}`),
-                          h('button', { type: 'button', className: 'lm-link', onClick: () => setConfirm({ kind: 'restore-backup', item }) }, t('backupRestore'))
-                        )
+                { className: 'lm-row' },
+                h('button', { type: 'button', className: 'lm-btn lm-primary', onClick: backupNow, disabled: busy !== '' }, t('backupNow')),
+                h(
+                  'label',
+                  { className: 'lm-field lm-field-inline' },
+                  h('span', { className: 'lm-label' }, t('backupKeep')),
+                  h(NumberField, { value: backupSettings.keep ?? 10, min: 1, max: 50, label: t('backupKeep'), disabled: busy !== '', onCommit: (value) => void saveSettings({ backup: { keep: value } }) })
+                )
+              ),
+              h('div', { className: 'lm-hint' }, t('backupCount', { n: state.backups?.length ?? 0 })),
+              (state.backups ?? []).length === 0
+                ? h('div', { className: 'lm-empty' }, t('backupEmpty'))
+                : h(
+                    'div',
+                    { className: 'lm-file-list' },
+                    state.backups.map((item) =>
+                      h(
+                        'div',
+                        { className: 'lm-file-row', key: item.id },
+                        h('span', { className: 'lm-file-name' }, item.id),
+                        h('span', { className: 'lm-muted' }, `${t('backupFiles', { n: item.files })} · ${formatBytes(item.bytes)} · ${formatTime(item.at)}`),
+                        h('button', { type: 'button', className: 'lm-link', onClick: () => setConfirm({ kind: 'restore-backup', item }), disabled: busy !== '' }, t('backupRestore')),
+                        h('button', { type: 'button', className: 'lm-link lm-danger-text', onClick: () => setConfirm({ kind: 'delete-backup', item }), disabled: busy !== '' }, t('backupDelete'))
                       )
-                    ),
-                confirm?.kind === 'restore-backup'
-                  ? h(ConfirmBar, { t, text: t('backupRestoreConfirm', { id: confirm.item.id }), confirmLabel: t('backupRestore'), danger: true, onCancel: () => setConfirm(null), onConfirm: () => restoreBackup(confirm.item), disabled: busy !== '' })
-                  : null
-              )
+                    )
+                  ),
+              confirm?.kind === 'restore-backup'
+                ? h(ConfirmBar, { t, text: t('backupRestoreConfirm', { id: confirm.item.id }), confirmLabel: t('backupRestore'), danger: true, onCancel: () => setConfirm(null), onConfirm: () => restoreBackup(confirm.item), disabled: busy !== '' })
+                : null,
+              confirm?.kind === 'delete-backup'
+                ? h(ConfirmBar, { t, text: t('backupDeleteConfirm', { id: confirm.item.id }), confirmLabel: t('confirmDeleteBackup'), onCancel: () => setConfirm(null), onConfirm: () => deleteBackupItem(confirm.item), disabled: busy !== '' })
+                : null
             )
           : null,
 

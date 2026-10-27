@@ -11,7 +11,7 @@
 ├── inbox/
 │   ├── YYYY-MM-DD.md           # 每轮对话原文（不注入、不检索、不压缩）
 │   └── archive/                # 已提炼原文（30 天自动清理）
-├── backups/<timestamp>/        # soul + MEMORY + topics 快照（保留最近 10 份）
+├── backups/<timestamp>/        # soul + MEMORY + topics 快照（默认保留 10 份）
 └── .trash/<timestamp>/<原路径>  # 删除的主题文件（默认保留 30 天，可恢复）
 ```
 
@@ -60,7 +60,7 @@ updated: 2026-10-27
 3. **`memory` 工具**：`search` / `read` / `write` / `list` / `delete`
    - `write` 只允许 `soul.md`、`MEMORY.md`、`topics/*.md`；旧路径 `people/x.md` 归一化到 `topics/x.md` 并写 type
    - `delete` 只允许 `topics/*.md`，移入回收站
-4. **设置页**：soul/MEMORY 编辑器、主题增删改、回收站、备份、全部参数
+4. **设置页**：soul/MEMORY 编辑器、主题增删改、自动化、备份管理、回收站、全部参数
 
 ## 模块
 
