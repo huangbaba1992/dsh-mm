@@ -24,7 +24,8 @@
     "icon.svg",
     "README.md",
     "ARCHITECTURE.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "dsh": {
     "bundle": {
@@ -46,5 +47,6 @@
     "memory",
     "local-first",
     "markdown"
-  ]
+  ],
+  "license": "MIT"
 }

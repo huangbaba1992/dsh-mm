@@ -148,3 +148,7 @@ node test/client.test.mjs
 ## 隐私
 
 插件不发任何网络请求；只有你配置的模型调用会离开本机。文件都是普通 Markdown，可直接用编辑器、git 或 grep 管理。
+
+## License
+
+[MIT](LICENSE) © 2026 huangbaba1992
