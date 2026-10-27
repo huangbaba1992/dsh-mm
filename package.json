@@ -1,8 +1,8 @@
 {
   "name": "dsh-local-memory",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Purely local soul, cross-session memory, and scheduled merge/dedupe in a folder you choose",
+  "description": "Purely local soul, cross-session memory, distillation, scheduled merge/dedupe, backups and trash in a folder you choose",
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -15,11 +15,16 @@
     "index.js",
     "core.js",
     "admin.js",
+    "jobs.js",
+    "model.js",
+    "storage.js",
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
-    "ARCHITECTURE.md"
+    "README.md",
+    "ARCHITECTURE.md",
+    "CHANGELOG.md"
   ],
   "dsh": {
     "bundle": {
@@ -32,5 +37,14 @@
         "@deepseek-ai/dsh-client-ui-settings"
       ]
     }
-  }
+  },
+  "scripts": {
+    "test": "node test/host.test.mjs && node test/client.test.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "memory",
+    "local-first",
+    "markdown"
+  ]
 }
