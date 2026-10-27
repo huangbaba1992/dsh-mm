@@ -1,4 +1,4 @@
-// dsh-local-memory — 文件库维护：备份、回收站、归档与目录初始化（Host 半内部模块）
+// dsh-mm — 文件库维护：备份、回收站、归档与目录初始化（Host 半内部模块）
 import { copyFile, mkdir, readdir, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import {

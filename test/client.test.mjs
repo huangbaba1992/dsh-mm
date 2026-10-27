@@ -1,5 +1,5 @@
 /**
- * dsh-local-memory — Client 端到端测试（真实 Host + 最小 React 垫片）。
+ * dsh-mm — Client 端到端测试（真实 Host + 最小 React 垫片）。
  * 运行：node test/client.test.mjs
  */
 import http from 'node:http'
@@ -140,9 +140,9 @@ const documentStub = { visibilityState: 'visible' }
 
 /* ---------------- Host ---------------- */
 
-const home = await fs.mkdtemp(path.join(os.tmpdir(), 'dsh-local-memory-client-home-'))
+const home = await fs.mkdtemp(path.join(os.tmpdir(), 'dsh-mm-client-home-'))
 process.env.DSH_HOME = home
-const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'dsh-local-memory-client-dir-'))
+const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'dsh-mm-client-dir-'))
 await fs.mkdir(path.join(dir, 'topics'), { recursive: true })
 await fs.writeFile(path.join(dir, 'soul.md'), 'You are terse.\n', 'utf8')
 await fs.writeFile(path.join(dir, 'MEMORY.md'), '# Long-term memory\n\n- prefers local tools\n', 'utf8')
@@ -238,7 +238,7 @@ sandbox.globalThis = sandbox
 const context = vm.createContext(sandbox)
 vm.runInContext(SRC, context, { filename: 'client.js' })
 const definition = globalThis.__clientDefinition
-assert.equal(definition.id, 'dsh-local-memory')
+assert.equal(definition.id, 'dsh-mm')
 
 const dicts = {}
 let registered

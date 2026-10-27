@@ -1,4 +1,4 @@
-// dsh-local-memory — 共享的常量、配置归一化、Markdown 与文件工具（Host 半内部模块）
+// dsh-mm — 共享的常量、配置归一化、Markdown 与文件工具（Host 半内部模块）
 import { readFileSync, statSync } from 'node:fs'
 import { open, readdir, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'

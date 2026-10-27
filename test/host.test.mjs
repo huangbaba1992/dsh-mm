@@ -1,5 +1,5 @@
 /**
- * dsh-local-memory — Host 端到端测试。
+ * dsh-mm — Host 端到端测试。
  * 不依赖运行中的 Harness：用桩 ctx 收集真实路由，再用本机 HTTP 服务分发请求；
  * 模型调用用桩 llm 按 system prompt 返回预置文本。
  * 运行：node test/host.test.mjs
@@ -32,7 +32,7 @@ async function waitFor(check, timeout = 8000, label = 'condition') {
   }
 }
 
-const tmp = (name) => fs.mkdtemp(path.join(os.tmpdir(), `dsh-local-memory-${name}-`))
+const tmp = (name) => fs.mkdtemp(path.join(os.tmpdir(), `dsh-mm-${name}-`))
 
 /* ---------------- 桩 ctx ---------------- */
 

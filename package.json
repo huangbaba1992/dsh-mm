@@ -1,8 +1,8 @@
 {
-  "name": "dsh-local-memory",
-  "version": "0.3.1",
+  "name": "dsh-mm",
+  "version": "0.1.0",
   "private": true,
-  "description": "Purely local soul, cross-session memory, distillation, scheduled merge/dedupe, backups and trash in a folder you choose",
+  "description": "DeepSeek Harness 本地记忆插件：soul / MEMORY / topics / inbox，提炼、压缩去重、备份与回收站",
   "type": "module",
   "main": "index.js",
   "exports": {

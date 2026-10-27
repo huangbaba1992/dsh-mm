@@ -1,4 +1,4 @@
-# dsh-local-memory
+# dsh-mm
 
 DeepSeek Harness 的纯本地长期记忆插件：一个普通文件夹，四层 Markdown，没有数据库、没有网络请求。
 
@@ -86,22 +86,30 @@ updated: 2026-10-27
 - 定时整理（默认 24 小时兜底）
 - 设置页「立即提炼」
 
+## 安装（GitHub）
+
+```bash
+dsh plugin --profile <profile> add github:huangbaba1992/dsh-mm
+```
+
+桌面版的 `desktop` profile 由应用管理，CLI 会拒绝直接写入；可在 设置 → 插件 中安装，或使用下面的本地 link 方式。
+
 ## 安装（本地 link）
 
 `package.json` 里：
 
 ```json
-"dependencies": { "dsh-local-memory": "link:/absolute/path/to/dsh-local-memory" }
+"dependencies": { "dsh-mm": "link:/absolute/path/to/dsh-mm" }
 ```
 
-并把 `dsh-local-memory` 加进 `dsh.profile.bundles`。改完 Host 代码需要重启 DSH；改前端后刷新页面（若宿主未热更新则同样重启）。
+并把 `dsh-mm` 加进 `dsh.profile.bundles`。改完 Host 代码需要重启 DSH；改前端后刷新页面（若宿主未热更新则同样重启）。
 
 插件 Config：
 
 ```yaml
 - insert:
     - id: local-memory
-      name: dsh-local-memory
+      name: dsh-mm
       config:
         dir: "~/.dsh/memory"
         soulFile: soul.md

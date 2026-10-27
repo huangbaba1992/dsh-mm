@@ -1,7 +1,7 @@
-// dsh-local-memory — Web 前端：设置页（概览 / 核心文件 / 主题 / 自动化 / 回收站）
+// dsh-mm — Web 前端：设置页（概览 / 核心文件 / 主题 / 自动化 / 回收站）
 // 加载格式：window.__ModuleLoader__.load 注册懒工厂；React 由浏览器模块表提供。
 window.__ModuleLoader__.load({
-  id: 'dsh-local-memory',
+  id: 'dsh-mm',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -1306,7 +1306,7 @@ window.__ModuleLoader__.load({
             )
           )
         } catch (error) {
-          console.warn('[local-memory] UI registration failed:', error)
+          console.warn('[dsh-mm] UI registration failed:', error)
         }
       }
     }

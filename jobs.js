@@ -1,4 +1,4 @@
-// dsh-local-memory — 提炼与压缩任务：inbox → MEMORY/topics，文件压缩去重（Host 半内部模块）
+// dsh-mm — 提炼与压缩任务：inbox → MEMORY/topics，文件压缩去重（Host 半内部模块）
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, readdir, rename, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'

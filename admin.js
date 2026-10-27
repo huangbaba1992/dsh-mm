@@ -1,4 +1,4 @@
-// dsh-local-memory — 管理面：设置文件、Web 路由、对话记录、定时任务（Host 半内部模块）
+// dsh-mm — 管理面：设置文件、Web 路由、对话记录、定时任务（Host 半内部模块）
 import { appendFile, mkdir, readdir, readFile, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'

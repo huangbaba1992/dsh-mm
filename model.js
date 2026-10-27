@@ -1,4 +1,4 @@
-// dsh-local-memory — 模型调用：路由解析、目录校验、重试与降级（Host 半内部模块）
+// dsh-mm — 模型调用：路由解析、目录校验、重试与降级（Host 半内部模块）
 import { randomUUID } from 'node:crypto'
 
 export const MAX_OUTPUT_TOKENS = 4096

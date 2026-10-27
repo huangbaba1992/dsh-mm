@@ -1,4 +1,4 @@
-// dsh-local-memory — 纯本地 soul + 跨会话记忆（Host 半入口，无网络）
+// dsh-mm — 纯本地 soul + 跨会话记忆（Host 半入口，无网络）
 // Config.dir 里：soul.md（身份，注入靠前）、MEMORY.md（索引，注入靠后），主题在 topics/。
 // 管理面（设置文件、Web 路由、定时任务）在 admin.js；模型调用在 model.js；前端在 client.js。
 import { appendFile, mkdir, stat, writeFile } from 'node:fs/promises'
